@@ -1,8 +1,6 @@
 package com.sky.config;
 
-import com.sky.common.JwtTokenService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -20,11 +18,6 @@ public class WebConfig implements WebMvcConfigurer {
     public WebConfig(AuthInterceptor authInterceptor, SkyProperties properties) {
         this.authInterceptor = authInterceptor;
         this.properties = properties;
-    }
-
-    @Bean
-    JwtTokenService jwtTokenService(SkyProperties properties) {
-        return new JwtTokenService(properties.getJwtSecret(), properties.getJwtTtlSeconds());
     }
 
     @Override
