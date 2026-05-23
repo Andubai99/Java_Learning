@@ -161,7 +161,15 @@ sky-server/src/main/resources/application-mysql.yml
 - 使用 `mysql` profile 启动时连接 `localhost:3306/sky_take_out`。
 - 启动时也会自动执行同一套 `schema.sql` 和 `data.sql`。
 
-当前本机没有检测到 `mysql` 命令行工具，所以今天没有通过 mysql CLI 实际连库。后续如果本机启动 MySQL，并创建 `sky_take_out` 数据库，可使用 MySQL profile 验证真实 MySQL 连接。
+后续补充安装并验证了 MySQL Server 8.4.9：
+
+- MySQL 安装目录：`C:\Program Files\MySQL\MySQL Server 8.4`
+- MySQL 数据目录：`C:\Users\86180\mysql-sky-takeout-data`
+- 监听地址：`127.0.0.1:3306`
+- 账号密码：`root` / `root`
+- 项目数据库：`sky_take_out`
+
+因为当前终端不是管理员，MySQL 没有注册为 Windows 服务，而是以普通用户进程启动。电脑重启后如果 MySQL 没有自动运行，需要重新启动 `mysqld.exe`。
 
 ## 7. Knife4j 与接口文档
 
@@ -265,6 +273,12 @@ sky-server/src/test/java/com/sky/docs/ApiDocumentationIntegrationTest.java
 - 解决：H2 JDBC URL 增加 `NON_KEYWORDS=USER,VALUE`。
 - 结果：H2 MySQL 兼容模式可以正常建表和导入数据。
 
+问题 4：真实 MySQL 执行 SQL 初始化失败。
+
+- 原因：H2 支持 `create index if not exists`，但 MySQL 8.4 不支持这种写法。
+- 解决：把索引改到 `create table` 语句内部，以 inline index 方式创建。
+- 结果：MySQL profile 下后端测试通过，真实 MySQL 中成功创建 11 张表和索引。
+
 ## 11. 今日验证记录
 
 后端数据库结构测试：
@@ -290,6 +304,34 @@ sky-server/src/test/java/com/sky/docs/ApiDocumentationIntegrationTest.java
 ```
 
 结果：通过，10 个测试成功，0 个失败。
+
+真实 MySQL profile 后端测试：
+
+```powershell
+.\mvnw.cmd "-Dspring.profiles.active=mysql" test
+```
+
+结果：通过，11 个测试成功，0 个失败。这个验证连接了本机真实 MySQL，自动执行 `schema.sql` 和 `data.sql`。
+
+真实 MySQL 表结构验证：
+
+```powershell
+mysql --protocol=tcp --host=127.0.0.1 --port=3306 --user=root --password=root sky_take_out -e "SHOW TABLES;"
+```
+
+结果：真实 MySQL 中存在 11 张表：
+
+- `employee`
+- `category`
+- `dish`
+- `dish_flavor`
+- `setmeal`
+- `setmeal_dish`
+- `user`
+- `address_book`
+- `shopping_cart`
+- `orders`
+- `order_detail`
 
 后端打包：
 

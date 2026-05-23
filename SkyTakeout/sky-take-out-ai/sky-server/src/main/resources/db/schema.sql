@@ -22,7 +22,8 @@ create table if not exists category (
     create_time datetime not null,
     update_time datetime not null,
     create_user bigint,
-    update_user bigint
+    update_user bigint,
+    index idx_category_type (type)
 );
 
 create table if not exists dish (
@@ -36,7 +37,8 @@ create table if not exists dish (
     create_time datetime not null,
     update_time datetime not null,
     create_user bigint,
-    update_user bigint
+    update_user bigint,
+    index idx_dish_category (category_id)
 );
 
 create table if not exists dish_flavor (
@@ -61,7 +63,8 @@ create table if not exists setmeal (
     create_time datetime not null,
     update_time datetime not null,
     create_user bigint,
-    update_user bigint
+    update_user bigint,
+    index idx_setmeal_category (category_id)
 );
 
 create table if not exists setmeal_dish (
@@ -103,7 +106,8 @@ create table if not exists address_book (
     create_time datetime not null,
     update_time datetime not null,
     create_user bigint,
-    update_user bigint
+    update_user bigint,
+    index idx_address_user (user_id)
 );
 
 create table if not exists shopping_cart (
@@ -118,7 +122,8 @@ create table if not exists shopping_cart (
     create_time datetime not null,
     update_time datetime not null,
     create_user bigint,
-    update_user bigint
+    update_user bigint,
+    index idx_cart_user (user_id)
 );
 
 create table if not exists orders (
@@ -148,7 +153,9 @@ create table if not exists orders (
     create_time datetime not null,
     update_time datetime not null,
     create_user bigint,
-    update_user bigint
+    update_user bigint,
+    index idx_orders_user (user_id),
+    index idx_orders_status (status)
 );
 
 create table if not exists order_detail (
@@ -164,14 +171,6 @@ create table if not exists order_detail (
     create_time datetime not null,
     update_time datetime not null,
     create_user bigint,
-    update_user bigint
+    update_user bigint,
+    index idx_order_detail_order (order_id)
 );
-
-create index if not exists idx_category_type on category(type);
-create index if not exists idx_dish_category on dish(category_id);
-create index if not exists idx_setmeal_category on setmeal(category_id);
-create index if not exists idx_address_user on address_book(user_id);
-create index if not exists idx_cart_user on shopping_cart(user_id);
-create index if not exists idx_orders_user on orders(user_id);
-create index if not exists idx_orders_status on orders(status);
-create index if not exists idx_order_detail_order on order_detail(order_id);

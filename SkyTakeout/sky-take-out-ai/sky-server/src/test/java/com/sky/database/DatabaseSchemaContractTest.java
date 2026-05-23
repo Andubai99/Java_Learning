@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseSchemaContractTest {
@@ -44,5 +45,24 @@ class DatabaseSchemaContractTest {
         }
         assertTrue(data.contains("insert into employee"), "missing employee seed data");
         assertTrue(data.contains("admin"), "missing admin demo account");
+    }
+
+    @Test
+    void schemaAvoidsStandaloneConditionalIndexStatementsForMysqlCompatibility() throws Exception {
+        String ddl = Files.readString(SCHEMA).toLowerCase();
+
+        assertFalse(ddl.contains("create index if not exists"), "MySQL does not support create index if not exists");
+        for (String index : List.of(
+                "idx_category_type",
+                "idx_dish_category",
+                "idx_setmeal_category",
+                "idx_address_user",
+                "idx_cart_user",
+                "idx_orders_user",
+                "idx_orders_status",
+                "idx_order_detail_order"
+        )) {
+            assertTrue(ddl.contains(index), "missing index: " + index);
+        }
     }
 }
