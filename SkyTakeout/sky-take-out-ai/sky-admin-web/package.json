@@ -1,0 +1,22 @@
+{
+  "name": "sky-admin-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 5173"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "^6.0.7",
+    "axios": "^1.7.7",
+    "echarts": "^5.5.1",
+    "element-plus": "^2.8.4",
+    "vue": "^3.5.34",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "vite": "^8.0.14"
+  }
+}

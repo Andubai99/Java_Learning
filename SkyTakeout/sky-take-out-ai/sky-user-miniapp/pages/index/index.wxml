@@ -1,0 +1,7 @@
+<view class="page">
+  <view class="panel">
+    <text class="eyebrow">Sky Takeout User</text>
+    <text class="title">{{ title }}</text>
+    <text class="description">{{ description }}</text>
+  </view>
+</view>

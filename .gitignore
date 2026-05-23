@@ -1,0 +1,23 @@
+# Java and Maven build output
+target/
+**/target/
+
+# Local Maven downloaded by sky-server/mvnw.cmd
+**/.mvn/apache-maven-*/
+
+# Node dependencies and build output
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+
+# Local runtime files
+uploads/
+**/uploads/
+*.log
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
