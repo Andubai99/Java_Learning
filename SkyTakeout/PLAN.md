@@ -9,15 +9,23 @@
 - 后端：Java 17、Spring Boot 3、MyBatis、MySQL 8、Redis、JWT、WebSocket、Spring Task、Apache POI、Knife4j
 - 管理端：Vue 3、Vite、Element Plus、ECharts
 - 用户端：微信小程序；若本机没有微信开发者工具，则同步提供 H5 用户端用于演示
-- 项目目录：`F:\Java_Learning\sky-take-out-ai`
+- 项目目录：`F:\Java_Learning\SkyTakeout\sky-take-out-ai`
 - 开发方式：AI 生成代码，人负责验收、运行、排错确认、理解核心设计
+
+## 执行纪律
+
+- 所有项目文件必须放在 `F:\Java_Learning\SkyTakeout\sky-take-out-ai` 下，不得在 `F:\Java_Learning` 根目录直接创建同级项目目录。
+- 必须严格按计划的“第 0 步、第 1 天、...、第 8 天”顺序一步一步执行；每一步开始前说明本步要做什么，完成后说明做了什么、验证结果是什么。
+- 不得跨多个天数混合实现；进入下一天任务前，必须先完成当前天的验收项、测试项和当天 Git commit。
+- 如果某一步验证失败，先说明失败原因和修复计划，修复并重新验证后再继续。
+- 每天结束必须提交一次 Git commit，提交信息按模块写，例如 `feat: add employee auth`；提交前必须确认测试/构建结果和 `git status`。
 
 ## Implementation Plan
 
 ### 第 0 步：准备与约束锁定，0.5 天
 
 - 新建 Git 分支：`codex/sky-take-out-ai`
-- 新建项目目录：`F:\Java_Learning\sky-take-out-ai`
+- 新建项目目录：`F:\Java_Learning\SkyTakeout\sky-take-out-ai`
 - 初始化三个子项目：
   - `sky-server`：Spring Boot 后端
   - `sky-admin-web`：管理端 Vue
