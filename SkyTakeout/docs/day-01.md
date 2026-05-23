@@ -130,8 +130,8 @@ sky-server/src/main/resources/application.yml
 
 作用：
 
-- 默认数据源使用 H2 内存数据库。
-- H2 开启 MySQL 兼容模式，方便在没有本地 MySQL 服务时也能验证 SQL 表结构。
+- 默认数据源使用真实 MySQL，连接 `localhost:3306/sky_take_out`。
+- 默认账号密码为 `root` / `root`，与本机安装的 MySQL 保持一致。
 - Spring Boot 启动时自动执行：
   - `classpath:db/schema.sql`
   - `classpath:db/data.sql`
@@ -141,7 +141,10 @@ sky-server/src/main/resources/application.yml
 ```yaml
 spring:
   datasource:
-    url: jdbc:h2:mem:sky_take_out;MODE=MySQL;DATABASE_TO_LOWER=TRUE;NON_KEYWORDS=USER,VALUE;DB_CLOSE_DELAY=-1
+    url: jdbc:mysql://localhost:3306/sky_take_out?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
       schema-locations: classpath:db/schema.sql
@@ -152,14 +155,16 @@ spring:
 新增文件：
 
 ```text
-sky-server/src/main/resources/application-mysql.yml
+sky-server/src/main/resources/application-test.yml
 ```
 
 作用：
 
-- 预留真实 MySQL 8 连接配置。
-- 使用 `mysql` profile 启动时连接 `localhost:3306/sky_take_out`。
-- 启动时也会自动执行同一套 `schema.sql` 和 `data.sql`。
+- 保留 H2 内存数据库配置，供没有 MySQL 的环境或快速测试使用。
+- H2 开启 MySQL 兼容模式，方便验证 SQL 表结构。
+- 使用 `test` profile 时启用，例如 `.\mvnw.cmd "-Dspring.profiles.active=test" test`。
+
+说明：`application-mysql.yml` 也保留了 MySQL profile 配置，但现在默认 `application.yml` 已经是 MySQL，正常启动不需要额外指定 `mysql` profile。
 
 后续补充安装并验证了 MySQL Server 8.4.9：
 
@@ -287,7 +292,7 @@ sky-server/src/test/java/com/sky/docs/ApiDocumentationIntegrationTest.java
 .\mvnw.cmd -Dtest=DatabaseSchemaContractTest test
 ```
 
-结果：通过，2 个测试成功。
+结果：通过，3 个测试成功。
 
 后端 Knife4j 文档测试：
 
@@ -303,15 +308,15 @@ sky-server/src/test/java/com/sky/docs/ApiDocumentationIntegrationTest.java
 .\mvnw.cmd test
 ```
 
-结果：通过，10 个测试成功，0 个失败。
+结果：通过，11 个测试成功，0 个失败。当前默认配置连接真实 MySQL。
 
-真实 MySQL profile 后端测试：
+H2 test profile 文档测试：
 
 ```powershell
-.\mvnw.cmd "-Dspring.profiles.active=mysql" test
+.\mvnw.cmd "-Dspring.profiles.active=test" -Dtest=ApiDocumentationIntegrationTest test
 ```
 
-结果：通过，11 个测试成功，0 个失败。这个验证连接了本机真实 MySQL，自动执行 `schema.sql` 和 `data.sql`。
+结果：通过，2 个测试成功，0 个失败。这个验证连接 H2 内存数据库，确认 `application-test.yml` 仍可作为无 MySQL 环境下的测试兜底。
 
 真实 MySQL 表结构验证：
 
@@ -358,6 +363,7 @@ http://localhost:8080/v3/api-docs
 
 - `/doc.html`：HTTP 200，包含 `Knife4j`。
 - `/v3/api-docs`：HTTP 200，包含 `/admin/employee/login`。
+- 默认数据源：MySQL，启动日志包含 `com.mysql.cj.jdbc.ConnectionImpl`。
 
 管理端构建：
 
