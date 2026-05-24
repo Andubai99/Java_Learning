@@ -396,7 +396,132 @@ git status --short
 - `git diff --check` 通过，只有 Windows 换行格式提示，不是失败。
 - `git status --short` 只包含 Day 1 预期新增和修改文件。
 
-## 12. 今天完成后的状态
+## 12. 手动验收方式及标准
+
+这一节给不熟悉代码的人使用。只要按步骤执行并看到对应结果，就可以判断 Day 1 的目标是否完成。
+
+### 12.1 确认 MySQL 正常运行
+
+在 PowerShell 中执行：
+
+```powershell
+mysqladmin --protocol=tcp --host=127.0.0.1 --port=3306 --user=root --password=root ping
+```
+
+验收标准：
+
+- 命令输出 `mysqld is alive`。
+- 如果提示无法连接，说明 MySQL 没有启动，后端默认数据源无法连接。
+
+如果 MySQL 没有启动，可临时启动本机安装的 MySQL：
+
+```powershell
+Start-Process -FilePath "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysqld.exe" -ArgumentList '--basedir="C:\Program Files\MySQL\MySQL Server 8.4" --datadir="C:\Users\86180\mysql-sky-takeout-data" --port=3306 --bind-address=127.0.0.1' -WindowStyle Hidden
+```
+
+### 12.2 检查数据库表和基础数据
+
+执行：
+
+```powershell
+mysql --protocol=tcp --host=127.0.0.1 --port=3306 --user=root --password=root sky_take_out -e "SHOW TABLES; SELECT COUNT(*) AS employee_count FROM employee;"
+```
+
+验收标准：
+
+- 能看到 11 张表：`employee`、`category`、`dish`、`dish_flavor`、`setmeal`、`setmeal_dish`、`user`、`address_book`、`shopping_cart`、`orders`、`order_detail`。
+- `employee_count` 至少是 `1`，说明管理员基础数据已经导入。
+
+### 12.3 启动后端
+
+执行：
+
+```powershell
+cd F:\Java_Learning\SkyTakeout\sky-take-out-ai\sky-server
+.\mvnw.cmd spring-boot:run
+```
+
+验收标准：
+
+- 日志出现 `Tomcat started on port 8080`。
+- 日志出现 `com.mysql.cj.jdbc.ConnectionImpl`，说明默认连接的是 MySQL。
+- 控制台没有启动失败异常。
+
+### 12.4 打开 Knife4j 接口文档
+
+浏览器访问：
+
+```text
+http://localhost:8080/doc.html
+```
+
+验收标准：
+
+- 页面可以打开。
+- 页面中能看到接口文档。
+- 能找到 `/admin/employee/login`。
+
+也可以用命令确认 OpenAPI JSON：
+
+```powershell
+(Invoke-WebRequest "http://localhost:8080/v3/api-docs" -UseBasicParsing).Content.Contains("/admin/employee/login")
+```
+
+验收标准：输出 `True`。
+
+### 12.5 验证统一成功返回
+
+另开一个 PowerShell，执行：
+
+```powershell
+Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://localhost:8080/admin/employee/login" `
+  -ContentType "application/json" `
+  -Body '{"username":"admin","password":"123456"}'
+```
+
+验收标准：
+
+- `code` 等于 `1`。
+- `msg` 为空。
+- `data` 中有 `id`、`username`、`name`、`token`。
+- `token` 有值。
+
+### 12.6 验证统一失败返回
+
+执行：
+
+```powershell
+Invoke-WebRequest `
+  -Method Post `
+  -Uri "http://localhost:8080/admin/employee/login" `
+  -ContentType "application/json" `
+  -Body '{"username":"admin","password":"wrong"}' `
+  -SkipHttpErrorCheck
+```
+
+验收标准：
+
+- HTTP 状态码是 `400`。
+- 响应 JSON 中 `code` 等于 `0`。
+- `data` 是 `null`。
+- `msg` 有错误信息。
+
+### 12.7 Day 1 通过标准汇总
+
+Day 1 通过人工验收需要同时满足：
+
+- 后端能启动。
+- 默认数据库连接 MySQL。
+- MySQL 中 11 张基础表完整。
+- 基础管理员数据存在。
+- Knife4j 文档能打开。
+- `/admin/employee/login` 能在接口文档中看到。
+- 登录成功返回 `{ code: 1, msg: null, data: ... }`。
+- 登录失败返回 `{ code: 0, msg: "...", data: null }`。
+
+## 13. 今天完成后的状态
 
 Day 1 完成后，项目具备以下能力：
 

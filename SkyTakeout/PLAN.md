@@ -19,6 +19,8 @@
 - 不得跨多个天数混合实现；进入下一天任务前，必须先完成当前天的验收项、测试项和当天 Git commit。
 - 如果某一步验证失败，先说明失败原因和修复计划，修复并重新验证后再继续。
 - 完成每天的任务后，必须在 `SkyTakeout/docs` 中按天数生成当天任务的详细记录 Markdown 文档，例如 `day-00.md`、`day-01.md`；文档要面向 0 基础读者，说明当天做了什么任务、代码结构如何、每个项目中的每个文件负责什么、执行了哪些验证、遇到什么问题以及如何解决。
+- 每天的当天任务文档必须包含“手动验收方式及标准”章节，写清楚人应该如何启动项目、访问哪些页面或接口、执行哪些命令、看到什么结果才算当天目标完成。
+- `SkyTakeout/docs/project-structure-and-capabilities.md` 是项目结构与能力总览文档，必须和每天的任务文档一起同步更新；每天结束时要更新当前目录结构、已完成能力、关键接口、运行方式、仍未完成能力。
 - 每天结束必须提交一次 Git commit，提交信息按模块写，例如 `feat: add employee auth`；提交前必须确认测试/构建结果和 `git status`。
 
 ## Implementation Plan
@@ -349,6 +351,8 @@
 - 管理端启动测试：`npm run dev`
 - 管理端构建测试：`npm run build`
 - 核心接口通过 Knife4j 或 Postman 手动验证
+- 按当天文档中的“手动验收方式及标准”执行人工验收
+- 同步更新 `SkyTakeout/docs/project-structure-and-capabilities.md`
 
 最终验收场景：
 
